@@ -1,0 +1,12 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+typedef struct {	int chave;} TItem;typedef struct celula {	struct celula *pAnt;	struct celula *pProx;	TItem item;} TCelula;typedef struct {	TCelula *pPrimeiro, *pUltimo;} TLista;
+void iniciarLista (TLista *pLista);int isVazia (TLista *pLista);int inserir (TLista *pLista, TItem x);int removerPrimeiro (TLista *pLista, TItem *pX);void imprimir (TLista *pLista, int inverso);TCelula* busca (TLista *pLista, int chave);
+void iniciarLista (TLista *pLista) {	pLista->pPrimeiro = NULL;	pLista->pUltimo = NULL;}int isVazia (TLista *pLista) {	return pLista->pPrimeiro == NULL;}
+int inserir (TLista *pLista, TItem x) {	TCelula *novo = (TCelula *) malloc (sizeof (TCelula));	novo->item = x;	novo->pAnt = NULL;	novo->pProx = NULL;		if (isVazia (pLista)) {		pLista->pPrimeiro = novo;		pLista->pUltimo = novo;	} else {		pLista->pUltimo->pProx = novo;		novo->pAnt = pLista->pUltimo;		pLista->pUltimo = novo;	}	return 1;}
+int removerPrimeiro (TLista *pLista, TItem *pX) {	if (isVazia (pLista))		return 0;	TCelula *pAux;	pAux = pLista->pPrimeiro;	*pX = pAux->item;	pLista->pPrimeiro = pAux->pProx;	pLista->pPrimeiro->pAnt = NULL;	free (pAux);	return 1;}	void imprimir (TLista *pLista, int inverso) {	TCelula *celula;		printf("Itens da lista");		if (inverso) {		celula = pLista->pUltimo;		printf(" (inverso)");	} else {		celula = pLista->pPrimeiro;	}	printf(": ");		while (celula != NULL) {		printf("%d ", celula->item.chave);				if (inverso) {			celula = celula->pAnt;		} else {			celula = celula->pProx;		}	}	printf("\n");}	TCelula* busca (TLista *pLista, int chave) {	TCelula* aux = pLista->pPrimeiro;	while (aux != NULL) {		if (aux->item.chave == chave) {			return aux;		} else {			aux = aux->pProx;		}	}	return NULL;}
+
+int main() {
+	TLista lista;	iniciarLista (&lista);	printf("Vazia: %s\n", isVazia(&lista) == 1 ? "SIM":"NAO");	TItem item1, item2;	item1.chave = 10;	inserir (&lista, item1);	item2.chave = -5;	inserir (&lista, item2);	imprimir (&lista, 0);	printf("Vazia: %s\n", isVazia(&lista) == 1 ? "SIM":"NAO");	TItem itemRemovido;	removerPrimeiro (&lista, &itemRemovido);	printf("Item removido: %d\n", itemRemovido.chave);	imprimir (&lista, 0);		TCelula *itemBusca = busca(&lista, 10);	if (itemBusca == NULL )		printf("Busca: valor não encontrado\n");	else		printf("Busca: %d\n", itemBusca->item.chave);
+}
